@@ -1,0 +1,342 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="theme-color" content="#744325">
+    <meta name="description" content="Conheça os produtos PraPan e monte seu pedido de orçamento para panificação.">
+    <link rel="icon" type="image/png" href="../public/logo-prapan-hd.png">
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="orcamentos.css">
+    <script src="app.js" defer></script>
+    <script src="orcamentos.js" defer></script>
+    <title>Produtos e Orçamento | PraPan</title>
+</head>
+
+<body>
+    <a class="skip-link" href="#conteudo">Ir para o conteúdo</a>
+
+    <header class="site-header">
+        <button class="menu-button" type="button" aria-label="Abrir menu" aria-controls="menu-lateral"
+            aria-expanded="false">
+            <span></span><span></span><span></span>
+        </button>
+        <a class="brand" href="index.html" aria-label="PraPan, página inicial">
+            <img src="../public/logo-prapan-hd.png" width="4008" height="1480"
+                alt="PraPan, muito mais paladar e qualidade">
+        </a>
+    </header>
+
+    <div class="menu-backdrop" data-menu-close aria-hidden="true"></div>
+    <aside class="side-menu" id="menu-lateral" aria-hidden="true" aria-label="Menu principal">
+        <div class="side-menu__header">
+            <div><span>Navegação</span><small>PraPan</small></div>
+            <button class="close-button" type="button" data-menu-close aria-label="Fechar menu">×</button>
+        </div>
+        <nav aria-label="Navegação principal">
+            <a href="index.html"><span>01</span>Home</a>
+            <a href="sobre.html"><span>02</span>Sobre</a>
+            <a href="#produtos"><span>03</span>Produtos</a>
+            <a class="is-current" href="#formulario" aria-current="page"><span>04</span>Orçamento</a>
+        </nav>
+        <div class="side-menu__footer">
+            <p class="side-menu__footer-label">PraPan</p>
+            <strong>Muito mais paladar e qualidade.</strong>
+            <p>Escolha produtos e prepare seu pedido em uma única página.</p>
+            <a href="#formulario">Montar pedido <span aria-hidden="true">↗</span></a>
+        </div>
+    </aside>
+
+    <main id="conteudo">
+        <section class="catalog-intro" aria-labelledby="pagina-titulo">
+            <div class="catalog-intro__copy">
+                <p class="catalog-kicker">PraPan <span aria-hidden="true">/</span> Produtos e orçamento</p>
+                <h1 id="pagina-titulo">Seu pedido começa aqui<span class="catalog-intro__period">.</span></h1>
+                <p>Conheça as nossas opções, cresca o estoque do seu negócio. 
+                    Selecione até 4 produtos e informe as quantidades, o pedido mínimo é de 100
+                    unidades por produto.</p>
+                <a class="catalog-intro__link" href="#produtos">Ver produtos <span aria-hidden="true">↓</span></a>
+            </div>
+            <div class="catalog-intro__art" aria-hidden="true">
+                <img src="../public/chef-prapan-bust-vector.svg" width="980" height="1320" alt="" fetchpriority="high">
+            </div>
+        </section>
+
+        <section class="catalog-section" id="produtos" aria-labelledby="produtos-titulo">
+            <div class="section-heading">
+                <div>
+                    <p class="catalog-kicker">Escolha seus itens</p>
+                    <h2 id="produtos-titulo">Produtos</h2>
+                </div>
+                <p>Selecione os itens desejados. Você poderá definir a quantidade de cada produto no formulário.</p>
+            </div>
+            <div class="product-grid">
+                <article class="product-card">
+                    <div class="product-card__visual">
+                        <button class="product-card__zoom" type="button" data-zoom-image="../public/Coco em flocos.jpg"
+                            data-zoom-title="Coco em Flocos Úmido" aria-label="Ampliar imagem do Produto">
+                            <img src="../public/Coco em flocos.jpg" width="800" height="700"
+                                alt="Embalagem do Produto 01" loading="lazy">
+                            <span class="product-card__zoom-hint" aria-hidden="true">Ampliar imagem ＋</span>
+                        </button>
+                        <span class="product-card__number" aria-hidden="true">01</span>
+                    </div>
+                    <div class="product-card__body">
+                        <p class="product-card__eyebrow">Linha PraPan</p>
+                        <h3>Coco em Flocos Úmidos</h3>
+                        <p>Selecione este item e informe a quantidade desejada.</p>
+                    </div>
+                    <a href="#produto-01">Selecionar produto <span aria-hidden="true">↗</span></a>
+                </article>
+                <article class="product-card">
+                    <div class="product-card__visual">
+                        <button class="product-card__zoom" type="button"
+                            data-zoom-image="../public/Desmoldante para formas.jpg" data-zoom-title="Desmoldante para Formas"
+                            aria-label="Ampliar imagem do Produto">
+                            <img src="../public/Desmoldante para formas.jpg" width="800" height="700"
+                                alt="Embalagem do Produto 02" loading="lazy">
+                            <span class="product-card__zoom-hint" aria-hidden="true">Ampliar imagem ＋</span>
+                        </button>
+                        <span class="product-card__number" aria-hidden="true">02</span>
+                    </div>
+                    <div class="product-card__body">
+                        <p class="product-card__eyebrow">Linha PraPan</p>
+                        <h3>Desmoldante para Formas</h3>
+                        <p>Selecione este item e informe a quantidade desejada.</p>
+                    </div>
+                    <a href="#produto-02">Selecionar produto <span aria-hidden="true">↗</span></a>
+                </article>
+                <article class="product-card">
+                    <div class="product-card__visual">
+                        <button class="product-card__zoom" type="button"
+                            data-zoom-image="../public/Geleia de brilho neutra.jpg" data-zoom-title="Geleia de Brilho Neutra"
+                            aria-label="Ampliar imagem do Produto">
+                            <img src="../public/Geleia de brilho neutra.jpg" width="800" height="700"
+                                alt="Embalagem do Produto 03" loading="lazy">
+                            <span class="product-card__zoom-hint" aria-hidden="true">Ampliar imagem ＋</span>
+                        </button>
+                        <span class="product-card__number" aria-hidden="true">03</span>
+                    </div>
+                    <div class="product-card__body">
+                        <p class="product-card__eyebrow">Linha PraPan</p>
+                        <h3>Geleia de Brilho Neutra</h3>
+                        <p>Selecione este item e informe a quantidade desejada.</p>
+                    </div>
+                    <a href="#produto-03">Selecionar produto <span aria-hidden="true">↗</span></a>
+                </article>
+                <article class="product-card">
+                    <div class="product-card__visual">
+                        <button class="product-card__zoom" type="button"
+                            data-zoom-image="../public/Mistura de pão de ló.jpg" data-zoom-title="Mistura de Pão de Ló"
+                            aria-label="Ampliar imagem ilustrativa do Produto 04">
+                            <img src="../public/Mistura de pão de ló.jpg" width="800" height="700"
+                                alt="Embalagem conceitual do Produto 04" loading="lazy">
+                            <span class="product-card__zoom-hint" aria-hidden="true">Ampliar imagem ＋</span>
+                        </button>
+                        <span class="product-card__number" aria-hidden="true">04</span>
+                    </div>
+                    <div class="product-card__body">
+                        <p class="product-card__eyebrow">Linha PraPan</p>
+                        <h3>Mistura de Pão de Ló</h3>
+                        <p>Selecione este item e informe a quantidade desejada.</p>
+                    </div>
+                    <a href="#produto-04">Selecionar produto <span aria-hidden="true">↗</span></a>
+                </article>
+            </div>
+            <p class="catalog-note">Imagens e nomes ilustrativos. Substitua pelos dados do catálogo oficial antes da
+                publicação.</p>
+        </section>
+
+        <section class="quote-section" id="formulario" aria-labelledby="formulario-titulo">
+            <div class="quote-section__intro">
+                <p class="catalog-kicker">Seu próximo passo</p>
+                <h2 id="formulario-titulo">Solicite um orçamento<span>.</span></h2>
+                <p>Preencha seus dados e selecione de 1 a 4 produtos, cada produto selecionado exige pelo menos 100
+                    unidades.</p>
+                <div class="quote-section__signature" aria-hidden="true">
+                    <span>PraPan</span>
+                    <span>Muito mais paladar e qualidade.</span>
+                </div>
+            </div>
+
+            <form class="quote-form" id="quote-form" novalidate>
+                <fieldset class="form-group">
+                    <legend>1. Dados para contato</legend>
+                    <div class="form-grid">
+                        <div class="form-field">
+                            <label for="empresa">Nome da empresa <span aria-hidden="true">*</span></label>
+                            <input id="empresa" name="empresa" type="text" autocomplete="organization" maxlength="120"
+                                required>
+                            <span class="field-error" id="empresa-error" aria-live="polite"></span>
+                        </div>
+                        <div class="form-field">
+                            <label for="cliente">Nome do cliente <span aria-hidden="true">*</span></label>
+                            <input id="cliente" name="cliente" type="text" autocomplete="name" maxlength="120" required>
+                            <span class="field-error" id="cliente-error" aria-live="polite"></span>
+                        </div>
+                        <div class="form-field form-field--full">
+                            <label for="whatsapp">Telefone com WhatsApp <span aria-hidden="true">*</span></label>
+                            <input id="whatsapp" name="whatsapp" type="tel" inputmode="tel" autocomplete="tel"
+                                placeholder="Ex.: (11) 99999-9999" maxlength="20" required>
+                            <span class="field-error" id="whatsapp-error" aria-live="polite"></span>
+                        </div>
+                    </div>
+                </fieldset>
+
+                <fieldset class="form-group">
+                    <legend>2. Produtos e quantidades</legend>
+                    <p class="form-group__hint">Marque pelo menos 1 produto, Mínimo de 100 unidades por produto.</p>
+                    <div class="order-items" id="order-items">
+                        <div class="order-item" id="produto-01">
+                            <label class="order-item__choice" for="selecionar-01"><input id="selecionar-01"
+                                    name="produtos" type="checkbox" value="Coco em Flocos Úmidos" data-product><span>Coco em Flocos
+                                    Úmidos</span></label>
+                            <div class="order-item__quantity"><label for="quantidade-01">Unidades</label><input
+                                    id="quantidade-01" name="quantidade-01" type="number" min="100" max="1000000"
+                                    step="1" inputmode="numeric" placeholder="Mín. 100" disabled></div>
+                        </div>
+                        <div class="order-item" id="produto-02">
+                            <label class="order-item__choice" for="selecionar-02"><input id="selecionar-02"
+                                    name="produtos" type="checkbox" value="Desmoldante para Formas" data-product><span>Desmoldante para Formas
+
+                                    </span></label>
+                            <div class="order-item__quantity"><label for="quantidade-02">Unidades</label><input
+                                    id="quantidade-02" name="quantidade-02" type="number" min="100" max="1000000"
+                                    step="1" inputmode="numeric" placeholder="Mín. 100" disabled></div>
+                        </div>
+                        <div class="order-item" id="produto-03">
+                            <label class="order-item__choice" for="selecionar-03"><input id="selecionar-03"
+                                    name="produtos" type="checkbox" value="Geleia de Brilho Neutra" data-product><span>Geleia de Brilho Neutra</span></label>
+                            <div class="order-item__quantity"><label for="quantidade-03">Unidades</label><input
+                                    id="quantidade-03" name="quantidade-03" type="number" min="100" max="1000000"
+                                    step="1" inputmode="numeric" placeholder="Mín. 100" disabled></div>
+                        </div>
+                        <div class="order-item" id="produto-04">
+                            <label class="order-item__choice" for="selecionar-04"><input id="selecionar-04"
+                                    name="produtos" type="checkbox" value="Mistura de Pão de Ló" data-product><span>Mistura de Pão de Ló</span></label>
+                            <div class="order-item__quantity"><label for="quantidade-04">Unidades</label><input
+                                    id="quantidade-04" name="quantidade-04" type="number" min="100" max="1000000"
+                                    step="1" inputmode="numeric" placeholder="Mín. 100" disabled></div>
+                        </div>
+                    </div>
+                    <span class="field-error" id="produtos-error" aria-live="polite"></span>
+                </fieldset>
+
+                <fieldset class="form-group">
+                    <legend>3. Endereço de entrega</legend>
+                    <div class="form-grid">
+                        <div class="form-field form-field--full">
+                            <label for="endereco">Endereço e número <span aria-hidden="true">*</span></label>
+                            <input id="endereco" name="endereco" type="text" autocomplete="street-address"
+                                maxlength="180" placeholder="Ex.: Rua das Flores, 123" required>
+                            <span class="field-error" id="endereco-error" aria-live="polite"></span>
+                        </div>
+                        <div class="form-field">
+                            <label for="cidade">Cidade <span aria-hidden="true">*</span></label>
+                            <input id="cidade" name="cidade" type="text" autocomplete="address-level2" maxlength="100"
+                                required>
+                            <span class="field-error" id="cidade-error" aria-live="polite"></span>
+                        </div>
+                        <div class="form-field form-field--short-pair">
+                            <div>
+                                <label for="estado">UF <span aria-hidden="true">*</span></label>
+                                <select id="estado" name="estado" autocomplete="address-level1" required>
+                                    <option value="">Selecione</option>
+                                    <option value="AC">AC</option>
+                                    <option value="AL">AL</option>
+                                    <option value="AP">AP</option>
+                                    <option value="AM">AM</option>
+                                    <option value="BA">BA</option>
+                                    <option value="CE">CE</option>
+                                    <option value="DF">DF</option>
+                                    <option value="ES">ES</option>
+                                    <option value="GO">GO</option>
+                                    <option value="MA">MA</option>
+                                    <option value="MT">MT</option>
+                                    <option value="MS">MS</option>
+                                    <option value="MG">MG</option>
+                                    <option value="PA">PA</option>
+                                    <option value="PB">PB</option>
+                                    <option value="PR">PR</option>
+                                    <option value="PE">PE</option>
+                                    <option value="PI">PI</option>
+                                    <option value="RJ">RJ</option>
+                                    <option value="RN">RN</option>
+                                    <option value="RS">RS</option>
+                                    <option value="RO">RO</option>
+                                    <option value="RR">RR</option>
+                                    <option value="SC">SC</option>
+                                    <option value="SP">SP</option>
+                                    <option value="SE">SE</option>
+                                    <option value="TO">TO</option>
+                                </select>
+                                <span class="field-error" id="estado-error" aria-live="polite"></span>
+                            </div>
+                            <div>
+                                <label for="cep">CEP <span aria-hidden="true">*</span></label>
+                                <input id="cep" name="cep" type="text" inputmode="numeric" autocomplete="postal-code"
+                                    placeholder="00000-000" maxlength="9" required>
+                                <span class="field-error" id="cep-error" aria-live="polite"></span>
+                            </div>
+                        </div>
+                    </div>
+                </fieldset>
+
+                <div class="quote-form__finish">
+                    <p>Campos com <span aria-hidden="true">*</span> são obrigatórios, Esta versão prepara uma prévia do
+                        pedido. <br> A compra será debitada quando o vendedor entrar em contato via whatsapp com o orçamento.</p>
+                    <button class="quote-submit" type="submit">Enviar para orçamento <span
+                            aria-hidden="true">↗</span></button>
+                    <p class="form-status" id="form-status" role="status" aria-live="polite"></p>
+                </div>
+            </form>
+        </section>
+    </main>
+
+    <dialog class="image-dialog" id="image-dialog" aria-labelledby="image-dialog-title">
+        <div class="image-dialog__header">
+            <div>
+                <p>Visual moderno!</p>
+                <h2 id="image-dialog-title">Produto</h2>
+            </div>
+            <button type="button" class="image-dialog__close" data-close-dialog
+                aria-label="Fechar imagem ampliada">×</button>
+        </div>
+        <img id="image-dialog-image" src="../public/Coco em flocos.jpg" width="800" height="700" alt="">
+        <p>Imagem dos produtos.</p>
+    </dialog>
+
+    <dialog class="preview-dialog" id="preview-dialog" aria-labelledby="preview-dialog-title">
+        <div class="preview-dialog__header">
+            <div>
+                <p>Pedido preparado</p>
+                <h2 id="preview-dialog-title">Confira seu orçamento</h2>
+            </div>
+            <button type="button" class="image-dialog__close" data-close-dialog
+                aria-label="Fechar prévia do pedido">×</button>
+        </div>
+        <p>Esta versão é apenas front-end. Seus dados não foram enviados à PraPan.</p>
+        <pre id="order-preview"></pre>
+        <button type="button" class="preview-dialog__copy" id="copy-order">Copiar pedido</button>
+        <p class="form-status" id="copy-status" role="status" aria-live="polite"></p>
+    </dialog>
+
+    <footer class="site-footer">
+        <div class="site-footer__brand"><strong>PraPan</strong><span>Insumos e pré-misturas para panificação.</span>
+        </div>
+        <div class="site-footer__end">
+            <p>© <span id="current-year">2026</span> PraPan. Todos os direitos reservados.</p>
+            <a class="instagram-link" href="https://www.instagram.com/" target="_blank" rel="noopener noreferrer"
+                aria-label="Instagram da PraPan">
+                <svg aria-hidden="true" viewBox="0 0 24 24">
+                    <rect x="3" y="3" width="18" height="18" rx="5"></rect>
+                    <circle cx="12" cy="12" r="4.25"></circle>
+                    <circle class="instagram-link__dot" cx="17.4" cy="6.7" r="1"></circle>
+                </svg>
+            </a>
+        </div>
+    </footer>
+</body>
+
+</html>
