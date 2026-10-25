@@ -1,0 +1,6 @@
+allowBuilds:
+  '@google/genai': false
+  esbuild: true
+  protobufjs: false
+overrides:
+  body-parser: 2.4.0

@@ -39,6 +39,7 @@
             <a href="sobre.html"><span>02</span>Sobre</a>
             <a href="#produtos"><span>03</span>Produtos</a>
             <a class="is-current" href="#formulario" aria-current="page"><span>04</span>Orçamento</a>
+            <a href="login.html"><span>05</span>Dashboard</a>
         </nav>
         <div class="side-menu__footer">
             <p class="side-menu__footer-label">PraPan</p>
@@ -53,7 +54,7 @@
             <div class="catalog-intro__copy">
                 <p class="catalog-kicker">PraPan <span aria-hidden="true">/</span> Produtos e orçamento</p>
                 <h1 id="pagina-titulo">Seu pedido começa aqui<span class="catalog-intro__period">.</span></h1>
-                <p>Conheça as nossas opções, cresca o estoque do seu negócio. 
+                <p>Conheça as nossas opções, cresca o estoque do seu negócio.
                     Selecione até 4 produtos e informe as quantidades, o pedido mínimo é de 100
                     unidades por produto.</p>
                 <a class="catalog-intro__link" href="#produtos">Ver produtos <span aria-hidden="true">↓</span></a>
@@ -129,9 +130,9 @@
                     <div class="product-card__visual">
                         <button class="product-card__zoom" type="button"
                             data-zoom-image="../public/Mistura de pão de ló.jpg" data-zoom-title="Mistura de Pão de Ló"
-                            aria-label="Ampliar imagem ilustrativa do Produto 04">
+                            aria-label="Ampliar imagem do Produto 04">
                             <img src="../public/Mistura de pão de ló.jpg" width="800" height="700"
-                                alt="Embalagem conceitual do Produto 04" loading="lazy">
+                                alt="Embalagem do Produto 04" loading="lazy">
                             <span class="product-card__zoom-hint" aria-hidden="true">Ampliar imagem ＋</span>
                         </button>
                         <span class="product-card__number" aria-hidden="true">04</span>
@@ -144,7 +145,7 @@
                     <a href="#produto-04">Selecionar produto <span aria-hidden="true">↗</span></a>
                 </article>
             </div>
-          
+
         </section>
 
         <section class="quote-section" id="formulario" aria-labelledby="formulario-titulo">
@@ -180,6 +181,12 @@
                                 placeholder="Ex.: (11) 99999-9999" maxlength="20" required>
                             <span class="field-error" id="whatsapp-error" aria-live="polite"></span>
                         </div>
+                        <div class="form-field form-field--full">
+                            <label for="email">E-mail para receber o orçamento <span aria-hidden="true">*</span></label>
+                            <input id="email" name="email" type="email" inputmode="email" autocomplete="email"
+                                placeholder="contato@empresa.com.br" maxlength="254" required>
+                            <span class="field-error" id="email-error" aria-live="polite"></span>
+                        </div>
                     </div>
                 </fieldset>
 
@@ -189,7 +196,7 @@
                     <div class="order-items" id="order-items">
                         <div class="order-item" id="produto-01">
                             <label class="order-item__choice" for="selecionar-01"><input id="selecionar-01"
-                                    name="produtos" type="checkbox" value="Coco em Flocos Úmidos" data-product><span>Coco em Flocos
+                                    name="produtos" type="checkbox" value="coco" data-product><span>Coco em Flocos
                                     Úmidos</span></label>
                             <div class="order-item__quantity"><label for="quantidade-01">Unidades</label><input
                                     id="quantidade-01" name="quantidade-01" type="number" min="100" max="1000000"
@@ -197,7 +204,7 @@
                         </div>
                         <div class="order-item" id="produto-02">
                             <label class="order-item__choice" for="selecionar-02"><input id="selecionar-02"
-                                    name="produtos" type="checkbox" value="Desmoldante para Formas" data-product><span>Desmoldante para Formas
+                                    name="produtos" type="checkbox" value="desmoldante" data-product><span>Desmoldante para Formas
 
                                     </span></label>
                             <div class="order-item__quantity"><label for="quantidade-02">Unidades</label><input
@@ -206,14 +213,14 @@
                         </div>
                         <div class="order-item" id="produto-03">
                             <label class="order-item__choice" for="selecionar-03"><input id="selecionar-03"
-                                    name="produtos" type="checkbox" value="Geleia de Brilho Neutra" data-product><span>Geleia de Brilho Neutra</span></label>
+                                    name="produtos" type="checkbox" value="geleia" data-product><span>Geleia de Brilho Neutra</span></label>
                             <div class="order-item__quantity"><label for="quantidade-03">Unidades</label><input
                                     id="quantidade-03" name="quantidade-03" type="number" min="100" max="1000000"
                                     step="1" inputmode="numeric" placeholder="Mín. 100" disabled></div>
                         </div>
                         <div class="order-item" id="produto-04">
                             <label class="order-item__choice" for="selecionar-04"><input id="selecionar-04"
-                                    name="produtos" type="checkbox" value="Mistura de Pão de Ló" data-product><span>Mistura de Pão de Ló</span></label>
+                                    name="produtos" type="checkbox" value="paoDeLo" data-product><span>Mistura de Pão de Ló</span></label>
                             <div class="order-item__quantity"><label for="quantidade-04">Unidades</label><input
                                     id="quantidade-04" name="quantidade-04" type="number" min="100" max="1000000"
                                     step="1" inputmode="numeric" placeholder="Mín. 100" disabled></div>
@@ -282,9 +289,16 @@
                     </div>
                 </fieldset>
 
+                <div class="form-field form-field--full quote-form__notes">
+                    <label for="urgencia">Prioridade do pedido</label>
+                    <select id="urgencia" name="urgencia"><option value="normal">Prazo normal</option><option value="urgente">Preciso com urgência</option></select>
+                    <label for="observacoes">Observações comerciais (opcional)</label>
+                    <textarea id="observacoes" name="observacoes" maxlength="300" rows="3" placeholder="Conte detalhes relevantes para o orçamento, sem dados pessoais adicionais."></textarea>
+                    <small>As observações podem ser analisadas por IA. E-mail, telefone, CEP e links são removidos antes dessa análise.</small>
+                </div>
+
                 <div class="quote-form__finish">
-                    <p>Campos com <span aria-hidden="true">*</span> são obrigatórios, Esta versão prepara uma prévia do
-                        pedido. <br> A compra será debitada quando o vendedor entrar em contato via whatsapp com o orçamento.</p>
+                    <p>Campos com <span aria-hidden="true">*</span> são obrigatórios. O valor dos produtos e o frete serão confirmados pela PraPan. Nenhum pagamento é realizado nesta página.</p>
                     <button class="quote-submit" type="submit">Enviar para orçamento <span
                             aria-hidden="true">↗</span></button>
                     <p class="form-status" id="form-status" role="status" aria-live="polite"></p>
@@ -309,13 +323,13 @@
     <dialog class="preview-dialog" id="preview-dialog" aria-labelledby="preview-dialog-title">
         <div class="preview-dialog__header">
             <div>
-                <p>Pedido preparado</p>
-                <h2 id="preview-dialog-title">Confira seu orçamento</h2>
+                <p>Solicitação registrada</p>
+                <h2 id="preview-dialog-title">Resumo do pedido</h2>
             </div>
             <button type="button" class="image-dialog__close" data-close-dialog
                 aria-label="Fechar prévia do pedido">×</button>
         </div>
-        <p>Esta versão é apenas front-end. Seus dados não foram enviados à PraPan.</p>
+        <p>Seu pedido foi registrado para orçamento. A PraPan confirmará o valor dos produtos e do frete.</p>
         <pre id="order-preview"></pre>
         <button type="button" class="preview-dialog__copy" id="copy-order">Copiar pedido</button>
         <p class="form-status" id="copy-status" role="status" aria-live="polite"></p>
@@ -326,7 +340,7 @@
         </div>
         <div class="site-footer__end">
             <p>© <span id="current-year">2026</span> PraPan. Todos os direitos reservados.</p>
-            <a class="instagram-link" href="https://www.instagram.com/" target="_blank" rel="noopener noreferrer"
+            <a class="instagram-link" href="https://www.instagram.com/prapan.sjp/" target="_blank" rel="noopener noreferrer"
                 aria-label="Instagram da PraPan">
                 <svg aria-hidden="true" viewBox="0 0 24 24">
                     <rect x="3" y="3" width="18" height="18" rx="5"></rect>

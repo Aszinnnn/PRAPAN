@@ -2,7 +2,7 @@
     position: relative;
     isolation: isolate;
     display: grid;
-    grid-template-columns: minmax(0, 60%) minmax(340px, 40%);
+    grid-template-columns: minmax(0, 3fr) minmax(0, 2fr);
     min-height: max(440px, calc(100svh - var(--header-height) - var(--footer-height)));
     overflow: hidden;
     background: var(--cream-100);
@@ -12,8 +12,10 @@
     position: relative;
     z-index: 5;
     align-self: center;
-    width: min(720px, 60vw);
-    padding: clamp(42px, 6vh, 72px) 3vw clamp(54px, 8vh, 88px) max(5vw, 46px);
+    min-width: 0;
+    width: 100%;
+    padding: clamp(36px, 6vh, 220px) clamp(18px, 2.5vw, 110px)
+        clamp(42px, 8vh, 250px) clamp(28px, 5vw, 300px);
 }
 
 .eyebrow {
@@ -28,9 +30,9 @@
 }
 
 .hero h1 {
-    max-width: 690px;
+    max-width: 100%;
     margin: 0;
-    font-size: clamp(3.5rem, 6.15vw, 6.35rem);
+    font-size: clamp(2.75rem, min(6vw, 10vh), 30rem);
     font-weight: 950;
     letter-spacing: -0.055em;
     line-height: 0.94;
@@ -39,11 +41,11 @@
 }
 
 .hero__lead {
-    max-width: 520px;
+    max-width: max(340px, 34vw);
     margin: clamp(22px, 2.5vw, 32px) 0 0;
     color: #3e2a1c;
     font-family: inherit;
-    font-size: clamp(1.2rem, 1.7vw, 1.55rem);
+    font-size: clamp(1.15rem, min(1.6vw, 2.7vh), 5rem);
     font-weight: 520;
     line-height: 1.28;
     text-align: left;
@@ -55,7 +57,7 @@
     flex-wrap: wrap;
     justify-content: flex-start;
     gap: 16px;
-    max-width: 520px;
+    max-width: max(360px, 38vw);
     margin-top: clamp(28px, 3.5vw, 42px);
 }
 
@@ -115,7 +117,7 @@
     top: clamp(0px, 1.2vh, 12px);
     right: clamp(-16px, 0.5vw, 10px);
     z-index: 1;
-    width: min(520px, 45vw);
+    width: min(42vw, 82vh);
 }
 
 .hero__illustration img {
@@ -136,26 +138,6 @@
 
 .hero__white-sweep path {
     fill: var(--cream-100);
-}
-
-@media (max-width: 1100px) {
-    .hero {
-        grid-template-columns: minmax(0, 61%) minmax(320px, 39%);
-    }
-
-    .hero__content {
-        width: min(660px, 61vw);
-        padding-right: 1.5vw;
-    }
-
-    .hero h1 {
-        font-size: clamp(3.25rem, 6.2vw, 5.35rem);
-    }
-
-    .hero__illustration {
-        right: -1.5vw;
-        width: min(470px, 45vw);
-    }
 }
 
 @media (max-width: 780px) {
@@ -197,6 +179,7 @@
         display: grid;
         grid-template-columns: repeat(2, minmax(0, 1fr));
         width: min(100%, 420px);
+        max-width: 420px;
         margin-top: 28px;
     }
 
@@ -315,50 +298,24 @@
     }
 }
 
-@media (min-width: 1500px) {
-    .hero__content {
-        width: min(820px, 58vw);
-        padding-left: max(6vw, 88px);
-    }
-
-    .hero__illustration {
-        width: min(610px, 42vw);
-    }
-}
-
 @media (min-width: 1800px) {
-    .hero__content {
-        width: min(1180px, 62vw);
-        padding-left: max(6vw, 128px);
-    }
-
     .eyebrow {
-        margin-bottom: clamp(22px, 1.4vw, 36px);
-        font-size: clamp(0.9rem, 0.62vw, 1.2rem);
-    }
-
-    .hero h1 {
-        max-width: 980px;
-        font-size: clamp(6.5rem, 5.3vw, 12.5rem);
+        margin-bottom: 1.2vw;
+        font-size: clamp(0.9rem, 0.78vw, 3rem);
     }
 
     .hero__lead {
-        max-width: 760px;
-        font-size: clamp(1.5rem, 1.35vw, 2.45rem);
+        max-width: 40vw;
     }
 
     .hero__actions {
-        max-width: 720px;
-        gap: clamp(20px, 1.2vw, 34px);
+        max-width: 40vw;
+        gap: 1.2vw;
     }
 
     .button {
-        min-width: clamp(210px, 11vw, 300px);
-        min-height: clamp(62px, 3.5vw, 86px);
-        font-size: clamp(1.05rem, 0.82vw, 1.45rem);
-    }
-
-    .hero__illustration {
-        width: min(850px, 40vw);
+        min-width: 11vw;
+        min-height: min(3.5vw, 6vh);
+        font-size: clamp(1.05rem, 0.82vw, 3rem);
     }
 }
