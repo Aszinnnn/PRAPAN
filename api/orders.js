@@ -14,7 +14,6 @@ export const products = Object.freeze({
     paoDeLo: { name: 'Mistura de Pão de Ló', unitPriceCents: 480 },
 });
 
-// Os preços são provisórios e definidos somente no servidor, nunca no formulário.
 export function calculateQuote(order) {
     if (!order || !Array.isArray(order.items) || order.items.length < 1 || order.items.length > 4) throw new OrderError('Itens do pedido inválidos.');
     let quantityTotal = 0;

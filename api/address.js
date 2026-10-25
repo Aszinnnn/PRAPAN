@@ -10,7 +10,6 @@ function normalized(value) {
     return value.normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase().replace(/[^a-z0-9]/g, '');
 }
 
-// Confere o CEP contra cidade e UF no servidor antes da análise de entrega.
 export async function validateDestination({ cep, cidade, estado }, fetcher = fetch) {
     let response;
     try {

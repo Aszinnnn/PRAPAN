@@ -250,7 +250,6 @@ if (process.argv.includes('--seed')) {
             if (request.body.enabled) {
                 let rules = request.body.rules;
                 if (rules?.fuelSource === 'ANP') {
-                    // Preço e data vêm da ANP, nunca do navegador ou do Gemini.
                     const reference = await fetchAnpDiesel();
                     const current = readSentinelConfig();
                     saveSentinelConfig({ ...current, publicFuelReference: { ...reference, fetchedAt: new Date().toISOString() } });

@@ -1,6 +1,5 @@
 node_modules/
 
-# Credenciais e configuracoes locais
 .env
 .env.*
 !.env.example
@@ -9,7 +8,6 @@ node_modules/
 *.p12
 *.pfx
 
-# Dados privados e documentos gerados
 admin.csv
 orders.csv
 PDF/
@@ -18,18 +16,15 @@ PDF/
 *.sqlite
 *.sqlite3
 
-# Artefatos locais
 dist/
 coverage/
 *.log
 .DS_Store
 
-# Material de trabalho local, fora da publicacao
 DOCUMENTACAO.md
 ia/
 tests/
 
-# Imagens de rascunho ou versoes nao utilizadas no site
 public/Site principal - PRAPAN.jpg
 public/chef-prapan-bust-hd.png
 public/chef-prapan-cropped-hd.png

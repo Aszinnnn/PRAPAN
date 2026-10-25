@@ -138,7 +138,6 @@ export function createSentinelAgent({
             const status = retryable ? 'retry' : uncertain ? 'uncertain' : 'review';
             const message = retryable ? 'Limite temporário da Brevo; nova tentativa agendada.' : uncertain ? 'Resultado do envio incerto; confira a Brevo antes de repetir.' : stage === 'analysis' ? 'Análise Gemini indisponível; confira chave, cota e conexão antes de reprocessar.' : 'Processamento automático interrompido; revisão necessária.';
             recordSentinel({ orderId: id, operation: 'error', status, message, notification: true, job: { status, retryAfter: retryable ? new Date(Date.now() + 15 * 60000).toISOString() : '' } }, stateFile);
-            // O motivo sanitizado está no histórico privado; não registrar dados do cliente ou da API no console.
         } finally {
             busy.delete(id);
         }

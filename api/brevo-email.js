@@ -30,7 +30,6 @@ export function readBrevoConfig() {
         if (!apiKey && typeof data?.apiKey === 'string') apiKey = data.apiKey.trim();
         if (!senderEmail && typeof data?.senderEmail === 'string') senderEmail = data.senderEmail.trim();
     } catch {
-        // Ignora caso arquivo não exista ou contenha formato inválido
     }
     return { apiKey, senderEmail };
 }

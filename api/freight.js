@@ -26,7 +26,6 @@ export function calculateFuelCost({ distanceKm, fuelPriceCents, efficiencyKmL })
 
 const origin = Object.freeze({
     label: 'Av. das Américas, 779, São José dos Pinhais/PR',
-    // Endereço com número confirmado na API de geocodificação em 24/10/2026.
     coordinates: [-49.208051, -25.529867],
 });
 
@@ -151,8 +150,7 @@ async function geocode(destination, key, fetcher, postalReference) {
         if (selected.exact && !ambiguous) return { coordinates: selected.coordinates, label: selected.label, precision: 'address' };
         if (!best || selected.score > best.score) best = selected;
     }
-    // O CEP pode oferecer um ponto na rua quando Pelias só conhece o centro da cidade.
-    // Nunca é apresentado como localização do número, nem libera venda automática.
+    // Coordenadas do CEP são aproximadas e não liberam venda automática.
     const postalStreet = streetKey(postalReference?.street);
     if (postalStreet && postalStreet === streetKey(parsed.street)
         && normalized(postalReference?.cep) === normalized(destination.cep)

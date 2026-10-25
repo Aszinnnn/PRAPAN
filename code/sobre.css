@@ -1,6 +1,3 @@
-/* Adaptação estática do index-1.css enviado pelo grupo.
-   Cabeçalho, menu, rodapé, fonte e cores-base vêm de style.css. */
-
 .about-hero {
     min-height: max(620px, calc(100svh - var(--header-height) - var(--footer-height)));
     overflow: clip;
