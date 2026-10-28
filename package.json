@@ -4,6 +4,10 @@
   "type": "module",
   "scripts": {
     "dev": "node --env-file-if-exists=.env code/server.js",
+    "build": "vite build",
+    "start": "node code/server.js",
+    "start:production": "NODE_ENV=production node --env-file-if-exists=.env code/server.js",
+    "generate:admin-env": "node --env-file-if-exists=.env code/server.js --generate-admin-env",
     "seed:admin": "node code/server.js --seed",
     "test": "node --test"
   },

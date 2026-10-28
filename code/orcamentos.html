@@ -10,7 +10,7 @@
     <link rel="stylesheet" href="style.css">
     <link rel="stylesheet" href="orcamentos.css">
     <script src="app.js" defer></script>
-    <script src="orcamentos.js" defer></script>
+    <script src="orcamentos.js" type="module"></script>
     <title>Produtos e Orçamento | PraPan</title>
 </head>
 
@@ -22,7 +22,7 @@
             aria-expanded="false">
             <span></span><span></span><span></span>
         </button>
-        <a class="brand" href="index.html" aria-label="PraPan, página inicial">
+        <a class="brand" href="/" aria-label="PraPan, página inicial">
             <img src="../public/logo-prapan-hd.png" width="4008" height="1480"
                 alt="PraPan, muito mais paladar e qualidade">
         </a>
@@ -35,7 +35,7 @@
             <button class="close-button" type="button" data-menu-close aria-label="Fechar menu">×</button>
         </div>
         <nav aria-label="Navegação principal">
-            <a href="index.html"><span>01</span>Home</a>
+            <a href="/"><span>01</span>Home</a>
             <a href="sobre.html"><span>02</span>Sobre</a>
             <a href="#produtos"><span>03</span>Produtos</a>
             <a class="is-current" href="#formulario" aria-current="page"><span>04</span>Orçamento</a>
@@ -55,7 +55,7 @@
                 <p class="catalog-kicker">PraPan <span aria-hidden="true">/</span> Produtos e orçamento</p>
                 <h1 id="pagina-titulo">Seu pedido começa aqui<span class="catalog-intro__period">.</span></h1>
                 <p>Conheça as nossas opções, cresca o estoque do seu negócio.
-                    Selecione até 4 produtos e informe as quantidades, o pedido mínimo é de 100
+                    Selecione os produtos desejados e informe as quantidades. O pedido mínimo é de 100
                     unidades por produto.</p>
                 <a class="catalog-intro__link" href="#produtos">Ver produtos <span aria-hidden="true">↓</span></a>
             </div>
@@ -72,8 +72,16 @@
                 </div>
                 <p>Selecione os itens desejados. Você poderá definir a quantidade de cada produto no formulário.</p>
             </div>
-            <div class="product-grid">
-                <article class="product-card">
+            <p class="catalog-status" id="catalog-status" role="status">Consultando preços dos produtos…</p>
+            <div class="catalog-carousel__toolbar" aria-label="Navegação dos produtos">
+                <p class="catalog-carousel__count" id="catalog-carousel-count" aria-live="polite">Carregando produtos…</p>
+                <div class="catalog-carousel__buttons">
+                    <button class="catalog-carousel__button" type="button" data-carousel-prev aria-label="Ver produtos anteriores" aria-controls="product-carousel" disabled>←</button>
+                    <button class="catalog-carousel__button" type="button" data-carousel-next aria-label="Ver próximos produtos" aria-controls="product-carousel">→</button>
+                </div>
+            </div>
+            <div class="product-grid" id="product-carousel" role="region" aria-roledescription="carrossel" aria-label="Produtos PraPan" tabindex="0">
+                <article class="product-card" data-product-id="coco">
                     <div class="product-card__visual">
                         <button class="product-card__zoom" type="button" data-zoom-image="../public/Coco em flocos.jpg"
                             data-zoom-title="Coco em Flocos Úmido" aria-label="Ampliar imagem do Produto">
@@ -86,11 +94,12 @@
                     <div class="product-card__body">
                         <p class="product-card__eyebrow">Linha PraPan</p>
                         <h3>Coco em Flocos Úmidos</h3>
+                        <p class="product-card__price" data-price-for="coco">Preço sob consulta</p>
                         <p>Selecione este item e informe a quantidade desejada.</p>
                     </div>
                     <a href="#produto-01">Selecionar produto <span aria-hidden="true">↗</span></a>
                 </article>
-                <article class="product-card">
+                <article class="product-card" data-product-id="desmoldante">
                     <div class="product-card__visual">
                         <button class="product-card__zoom" type="button"
                             data-zoom-image="../public/Desmoldante para formas.jpg" data-zoom-title="Desmoldante para Formas"
@@ -104,11 +113,12 @@
                     <div class="product-card__body">
                         <p class="product-card__eyebrow">Linha PraPan</p>
                         <h3>Desmoldante para Formas</h3>
+                        <p class="product-card__price" data-price-for="desmoldante">Preço sob consulta</p>
                         <p>Selecione este item e informe a quantidade desejada.</p>
                     </div>
                     <a href="#produto-02">Selecionar produto <span aria-hidden="true">↗</span></a>
                 </article>
-                <article class="product-card">
+                <article class="product-card" data-product-id="geleia">
                     <div class="product-card__visual">
                         <button class="product-card__zoom" type="button"
                             data-zoom-image="../public/Geleia de brilho neutra.jpg" data-zoom-title="Geleia de Brilho Neutra"
@@ -122,11 +132,12 @@
                     <div class="product-card__body">
                         <p class="product-card__eyebrow">Linha PraPan</p>
                         <h3>Geleia de Brilho Neutra</h3>
+                        <p class="product-card__price" data-price-for="geleia">Preço sob consulta</p>
                         <p>Selecione este item e informe a quantidade desejada.</p>
                     </div>
                     <a href="#produto-03">Selecionar produto <span aria-hidden="true">↗</span></a>
                 </article>
-                <article class="product-card">
+                <article class="product-card" data-product-id="paoDeLo">
                     <div class="product-card__visual">
                         <button class="product-card__zoom" type="button"
                             data-zoom-image="../public/Mistura de pão de ló.jpg" data-zoom-title="Mistura de Pão de Ló"
@@ -140,6 +151,7 @@
                     <div class="product-card__body">
                         <p class="product-card__eyebrow">Linha PraPan</p>
                         <h3>Mistura de Pão de Ló</h3>
+                        <p class="product-card__price" data-price-for="paoDeLo">Preço sob consulta</p>
                         <p>Selecione este item e informe a quantidade desejada.</p>
                     </div>
                     <a href="#produto-04">Selecionar produto <span aria-hidden="true">↗</span></a>
@@ -152,7 +164,7 @@
             <div class="quote-section__intro">
                 <p class="catalog-kicker">Seu próximo passo</p>
                 <h2 id="formulario-titulo">Solicite um orçamento<span>.</span></h2>
-                <p>Preencha seus dados e selecione de 1 a 4 produtos, cada produto selecionado exige pelo menos 100
+                <p>Preencha seus dados e selecione os produtos desejados. Cada produto selecionado exige pelo menos 100
                     unidades.</p>
                 <div class="quote-section__signature" aria-hidden="true">
                     <span>PraPan</span>
@@ -193,10 +205,12 @@
                 <fieldset class="form-group">
                     <legend>2. Produtos e quantidades</legend>
                     <p class="form-group__hint">Marque pelo menos 1 produto, Mínimo de 100 unidades por produto.</p>
+                    <label class="order-items__search" for="buscar-produto">Buscar produto<input id="buscar-produto" type="search" autocomplete="off" placeholder="Digite o nome do produto"></label>
+                    <p class="order-items__count" id="order-items-count" aria-live="polite">Nenhum produto selecionado</p>
                     <div class="order-items" id="order-items">
                         <div class="order-item" id="produto-01">
                             <label class="order-item__choice" for="selecionar-01"><input id="selecionar-01"
-                                    name="produtos" type="checkbox" value="coco" data-product><span>Coco em Flocos
+                                    name="produtos" type="checkbox" value="coco" data-product disabled><span>Coco em Flocos
                                     Úmidos</span></label>
                             <div class="order-item__quantity"><label for="quantidade-01">Unidades</label><input
                                     id="quantidade-01" name="quantidade-01" type="number" min="100" max="1000000"
@@ -204,7 +218,7 @@
                         </div>
                         <div class="order-item" id="produto-02">
                             <label class="order-item__choice" for="selecionar-02"><input id="selecionar-02"
-                                    name="produtos" type="checkbox" value="desmoldante" data-product><span>Desmoldante para Formas
+                                    name="produtos" type="checkbox" value="desmoldante" data-product disabled><span>Desmoldante para Formas
 
                                     </span></label>
                             <div class="order-item__quantity"><label for="quantidade-02">Unidades</label><input
@@ -213,14 +227,14 @@
                         </div>
                         <div class="order-item" id="produto-03">
                             <label class="order-item__choice" for="selecionar-03"><input id="selecionar-03"
-                                    name="produtos" type="checkbox" value="geleia" data-product><span>Geleia de Brilho Neutra</span></label>
+                                    name="produtos" type="checkbox" value="geleia" data-product disabled><span>Geleia de Brilho Neutra</span></label>
                             <div class="order-item__quantity"><label for="quantidade-03">Unidades</label><input
                                     id="quantidade-03" name="quantidade-03" type="number" min="100" max="1000000"
                                     step="1" inputmode="numeric" placeholder="Mín. 100" disabled></div>
                         </div>
                         <div class="order-item" id="produto-04">
                             <label class="order-item__choice" for="selecionar-04"><input id="selecionar-04"
-                                    name="produtos" type="checkbox" value="paoDeLo" data-product><span>Mistura de Pão de Ló</span></label>
+                                    name="produtos" type="checkbox" value="paoDeLo" data-product disabled><span>Mistura de Pão de Ló</span></label>
                             <div class="order-item__quantity"><label for="quantidade-04">Unidades</label><input
                                     id="quantidade-04" name="quantidade-04" type="number" min="100" max="1000000"
                                     step="1" inputmode="numeric" placeholder="Mín. 100" disabled></div>

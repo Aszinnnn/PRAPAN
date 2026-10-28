@@ -1,0 +1,14 @@
+.git/
+node_modules/
+.env
+.env.*
+!.env.example
+PDF/
+*.csv
+*.pdf
+DOCUMENTACAO.md
+ia/
+tests/
+dist/
+coverage/
+*.log

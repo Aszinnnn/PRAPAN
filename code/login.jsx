@@ -32,7 +32,10 @@ function LoginForm() {
             });
             if (!response.ok) {
                 setPassword('');
-                setMessage(response.status === 429 ? 'Muitas tentativas. Aguarde 15 minutos.' : 'E-mail ou senha inválidos.');
+                setMessage(response.status === 429 ? 'Muitas tentativas. Aguarde 15 minutos antes de tentar novamente.'
+                    : response.status === 403 ? 'Sessão de acesso expirada ou configuração do site incorreta. Atualize a página e tente novamente.'
+                        : response.status === 503 ? 'Autenticação temporariamente indisponível. Tente novamente mais tarde.'
+                            : 'E-mail ou senha inválidos.');
                 return;
             }
             setPassword('');

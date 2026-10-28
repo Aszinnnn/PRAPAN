@@ -1,21 +1,18 @@
 import crypto from 'node:crypto';
 import fs from 'node:fs';
-import os from 'node:os';
 import path from 'node:path';
 import { parse } from 'csv-parse/sync';
 import { stringify } from 'csv-stringify/sync';
 import { validateDestination, AddressError } from './address.js';
 import { calculateFuelCost, FreightError, getRoadDistance } from './freight.js';
+import { privateRoot } from './private-storage.js';
+import { catalogProducts } from '../code/catalog-data.js';
 
-export const products = Object.freeze({
-    coco: { name: 'Coco em Flocos Úmidos', unitPriceCents: 390 },
-    desmoldante: { name: 'Desmoldante para Formas', unitPriceCents: 650 },
-    geleia: { name: 'Geleia de Brilho Neutra', unitPriceCents: 520 },
-    paoDeLo: { name: 'Mistura de Pão de Ló', unitPriceCents: 480 },
-});
+const legacyUnitPrices = { coco: 390, desmoldante: 650, geleia: 520, paoDeLo: 480 };
+export const products = Object.freeze(Object.fromEntries(catalogProducts.map(({ id, name }) => [id, { name, unitPriceCents: legacyUnitPrices[id] ?? null }])));
 
 export function calculateQuote(order) {
-    if (!order || !Array.isArray(order.items) || order.items.length < 1 || order.items.length > 4) throw new OrderError('Itens do pedido inválidos.');
+    if (!order || !Array.isArray(order.items) || order.items.length < 1 || order.items.length > Object.keys(products).length) throw new OrderError('Itens do pedido inválidos.');
     let quantityTotal = 0;
     let productsTotalCents = 0;
     const items = order.items.map((item) => {
@@ -23,17 +20,17 @@ export function calculateQuote(order) {
         if (!product || !Number.isSafeInteger(item.quantity) || item.quantity < 100 || item.quantity > 1000000) throw new OrderError('Itens do pedido inválidos.');
         const approvedPrice = order.priceSnapshot && Object.hasOwn(order.priceSnapshot, item.id) ? order.priceSnapshot[item.id] : null;
         const unitPriceCents = Number.isSafeInteger(approvedPrice) && approvedPrice > 0 ? approvedPrice : product.unitPriceCents;
-        const totalCents = unitPriceCents * item.quantity;
+        const totalCents = Number.isSafeInteger(unitPriceCents) && unitPriceCents > 0 ? unitPriceCents * item.quantity : null;
         quantityTotal += item.quantity;
-        productsTotalCents += totalCents;
+        productsTotalCents = productsTotalCents === null || totalCents === null ? null : productsTotalCents + totalCents;
         return { id: item.id, name: product.name, quantity: item.quantity, unitPriceCents, totalCents };
     });
     const shippingCents = order.shippingStatus === 'quoted' && Number.isSafeInteger(order.shippingCents) && order.shippingCents >= 0 && order.shippingCents <= 10000 ? order.shippingCents : null;
-    const totalCents = shippingCents === null ? null : productsTotalCents + shippingCents;
+    const totalCents = shippingCents === null || productsTotalCents === null ? null : productsTotalCents + shippingCents;
     return { items, quantityTotal, productsTotalCents, shippingCents, totalCents, pricesProvisional: !order.priceSnapshot };
 }
 
-export const ordersFile = path.join(os.homedir(), '.local', 'share', 'prapan', 'orders.csv');
+export const ordersFile = path.join(privateRoot, 'orders.csv');
 const legacyColumns = ['id', 'createdAt', 'empresa', 'cliente', 'whatsapp', 'endereco', 'cidade', 'estado', 'cep', 'itemsJson', 'addressStatus', 'shippingStatus', 'shippingProvider', 'shippingCents', 'shippingUpdatedAt', 'shippingMessage'];
 const previousColumns = [...legacyColumns, 'shippingCalculationJson'];
 const routeColumns = [...previousColumns, 'routeJson'];
@@ -80,7 +77,7 @@ export function validateOrder(input) {
     const urgencia = input.urgencia === undefined ? 'normal' : input.urgencia;
     if (!['normal', 'urgente'].includes(urgencia)) throw new OrderError('Urgência inválida.');
 
-    if (!Array.isArray(input.items) || input.items.length < 1 || input.items.length > 4) throw new OrderError('Selecione de 1 a 4 produtos.');
+    if (!Array.isArray(input.items) || input.items.length < 1 || input.items.length > Object.keys(products).length) throw new OrderError('Selecione pelo menos um produto válido.');
     const seen = new Set();
     const items = input.items.map((item) => {
         if (!item || typeof item !== 'object' || Array.isArray(item) || typeof item.id !== 'string' || !Object.hasOwn(products, item.id) || seen.has(item.id)) throw new OrderError('Produto inválido ou duplicado.');
@@ -187,13 +184,14 @@ export function updateShipping(id, input, file = ordersFile, verifiedFuel = null
 
 export function approveOrderPrices(id, approvedPrices, file = ordersFile) {
     if (typeof id !== 'string' || !/^[0-9a-f-]{36}$/.test(id)) throw new OrderError('Pedido inválido.', 400);
-    if (!approvedPrices || Object.keys(products).some((key) => !Number.isSafeInteger(approvedPrices[key]) || approvedPrices[key] < 1 || approvedPrices[key] > 1000000)) throw new OrderError('Tabela de preços inválida.');
     const records = readRecords(file);
     const record = records.find((entry) => entry.id === id);
     if (!record) throw new OrderError('Pedido não encontrado.', 404);
+    const selectedIds = JSON.parse(record.itemsJson).map((item) => item.id);
+    if (!approvedPrices || selectedIds.some((key) => !Number.isSafeInteger(approvedPrices[key]) || approvedPrices[key] < 1 || approvedPrices[key] > 1000000)) throw new OrderError('Preço não autorizado para um dos produtos deste pedido.');
     if (record.quoteEmailSentAt) throw new OrderError('Pedido já enviado; não é seguro alterar os preços.', 409);
     if (!record.priceSnapshotJson) {
-        record.priceSnapshotJson = JSON.stringify(Object.fromEntries(Object.keys(products).map((key) => [key, approvedPrices[key]])));
+        record.priceSnapshotJson = JSON.stringify(Object.fromEntries(selectedIds.map((key) => [key, approvedPrices[key]])));
         writeRecords(records, file);
     }
     return listOrders(file).find((entry) => entry.id === id);

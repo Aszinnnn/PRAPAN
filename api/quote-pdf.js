@@ -12,6 +12,7 @@ const money = (cents) => new Intl.NumberFormat('pt-BR', { style: 'currency', cur
 const count = (quantity) => new Intl.NumberFormat('pt-BR').format(quantity);
 
 export function renderQuotePdf(order, issuedAt = new Date()) {
+    if (order?.quote?.productsTotalCents === null || order?.quote?.items?.some((item) => !Number.isSafeInteger(item.unitPriceCents) || item.unitPriceCents < 1)) throw new Error('Preço de produto não autorizado para emissão do orçamento.');
     if (order?.quote?.totalCents === null || !Number.isSafeInteger(order?.quote?.totalCents)) throw new Error('Frete não confirmado para emissão do orçamento.');
     return new Promise((resolve, reject) => {
         const chunks = [];
@@ -35,24 +36,51 @@ export function renderQuotePdf(order, issuedAt = new Date()) {
             if (order.email) document.text(`E-mail: ${order.email}`, 48, 290, { width: 240 });
             document.fontSize(8).text(`${order.endereco}, ${order.cidade}/${order.estado} - CEP ${order.cep}`, 305, 264, { width: 242, height: 52 });
 
-            const tableY = 325;
-            document.roundedRect(48, tableY, 499, 32, 6).fill(dark);
-            document.fillColor('#ffffff').font('Helvetica-Bold').fontSize(9)
-                .text('PRODUTO', 61, tableY + 11, { width: 190 })
-                .text('QTD.', 257, tableY + 11, { width: 55, align: 'right' })
-                .text('UNITÁRIO', 328, tableY + 11, { width: 91, align: 'right' })
-                .text('TOTAL', 436, tableY + 11, { width: 97, align: 'right' });
+            const drawFooter = () => {
+                document.moveTo(48, 779).lineTo(right, 779).lineWidth(2).strokeColor(green).stroke();
+                document.fillColor(muted).font('Helvetica').fontSize(8).text('PraPan  |  Muito mais paladar e qualidade.', 48, 789, { width: 499 });
+            };
+            const drawContinuationHeader = () => {
+                document.rect(0, 0, 595.28, 124).fill(brown);
+                document.image(logoFile, 48, 31, { fit: [150, 57] });
+                document.fillColor('#ffffff').font('Helvetica-Bold').fontSize(20).text('ORÇAMENTO', 306, 42, { width: 241, align: 'right' });
+                document.font('Helvetica').fontSize(9).text(`Pedido ${order.id.slice(0, 8).toUpperCase()} · continuação`, 306, 75, { width: 241, align: 'right' });
+            };
+            const drawTableHeader = (y) => {
+                document.roundedRect(48, y, 499, 32, 6).fill(dark);
+                document.fillColor('#ffffff').font('Helvetica-Bold').fontSize(9)
+                    .text('PRODUTO', 61, y + 11, { width: 190 })
+                    .text('QTD.', 257, y + 11, { width: 55, align: 'right' })
+                    .text('UNITÁRIO', 328, y + 11, { width: 91, align: 'right' })
+                    .text('TOTAL', 436, y + 11, { width: 97, align: 'right' });
+            };
+            let rowY = 357;
+            drawTableHeader(325);
             order.quote.items.forEach((item, index) => {
-                const y = tableY + 32 + index * 44;
+                if (rowY + 44 > 690) {
+                    drawFooter();
+                    document.addPage({ size: 'A4', margin: 0 });
+                    drawContinuationHeader();
+                    drawTableHeader(160);
+                    rowY = 192;
+                }
+                const y = rowY;
                 if (index % 2 === 0) document.rect(48, y, 499, 44).fill(cream);
                 document.fillColor(dark).font('Helvetica').fontSize(9)
                     .text(item.name, 61, y + 14, { width: 190, height: 22 })
                     .text(count(item.quantity), 257, y + 14, { width: 55, align: 'right' })
                     .text(money(item.unitPriceCents), 328, y + 14, { width: 91, align: 'right' });
                 document.font('Helvetica-Bold').text(money(item.totalCents), 436, y + 14, { width: 97, align: 'right' });
+                rowY += 44;
             });
 
-            const totalsY = Math.max(480, tableY + 32 + order.quote.items.length * 44 + 19);
+            let totalsY = Math.max(480, rowY + 19);
+            if (totalsY + 154 > 708) {
+                drawFooter();
+                document.addPage({ size: 'A4', margin: 0 });
+                drawContinuationHeader();
+                totalsY = 210;
+            }
             document.roundedRect(48, totalsY, 499, 154, 12).fill(cream);
             document.fillColor(dark).font('Helvetica-Bold').fontSize(11).text('RESUMO DO ORÇAMENTO', 66, totalsY + 18);
             document.font('Helvetica').fontSize(10).text(`Produtos (${count(order.quote.quantityTotal)} unidades)`, 66, totalsY + 50, { width: 330 });
@@ -69,8 +97,7 @@ export function renderQuotePdf(order, issuedAt = new Date()) {
                 document.fillColor(muted).font('Helvetica').fontSize(8).text(`${fuel.vehicle}: ${count(fuel.distanceKm)} km de ida; ${String(fuel.efficiencyKmL).replace('.', ',')} km/l; diesel S10 ${money(fuel.fuelPriceCents)}/l (${fuel.fuelSource}, ${fuel.fuelReferenceDate}).`, 48, 727, { width: 499 });
             }
             document.fillColor(muted).font('Helvetica').fontSize(8).text('Entrega calculada somente pelo combustível da ida. Pedágio, motorista, manutenção e margem não estão incluídos.', 48, 747, { width: 499 });
-            document.moveTo(48, 779).lineTo(right, 779).lineWidth(2).strokeColor(green).stroke();
-            document.fontSize(8).text('PraPan  |  Muito mais paladar e qualidade.', 48, 789, { width: 499 });
+            drawFooter();
             document.end();
         } catch (error) {
             document.destroy(error);

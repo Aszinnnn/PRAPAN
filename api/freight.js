@@ -1,5 +1,5 @@
 import fs from 'node:fs';
-import os from 'node:os';
+import { privateRoot } from './private-storage.js';
 import path from 'node:path';
 
 export class FreightError extends Error {
@@ -31,7 +31,7 @@ const origin = Object.freeze({
 
 function readRouteKey() {
     if (process.env.OPENROUTESERVICE_API_KEY) return process.env.OPENROUTESERVICE_API_KEY.trim();
-    const folder = path.join(os.homedir(), '.local', 'share', 'prapan');
+    const folder = privateRoot;
     const file = path.join(folder, 'ors.key');
     try {
         const folderStat = fs.lstatSync(folder);
@@ -57,13 +57,13 @@ const streetKey = (value) => normalized(String(value || '').replace(/^\s*(?:rua|
 
 function splitAddress(value) {
     const address = String(value || '').trim();
-    const afterComma = address.match(/^(.+?),\s*(?:n[º°.]?\s*)?(\d+[a-z]?)(?=\s|,|$)/i);
+    const afterComma = address.match(/^(.+?),\s*(?:n(?:úmero|umero|[º°.]?)\s*)?(\d+[a-z]?)(?=\s|,|$)/i);
     if (afterComma) return { street: afterComma[1].trim(), number: afterComma[2] };
-    const explicit = address.match(/^(.+?)\s+n[º°.]?\s*(\d+[a-z]?)(?=\s|,|$)/i);
+    const explicit = address.match(/^(.+?)\s+n(?:úmero|umero|[º°.]?)\s*(\d+[a-z]?)(?=\s|,|$)/i);
     if (explicit) return { street: explicit[1].trim(), number: explicit[2] };
     const beforeStreet = address.match(/^(\d+[a-z]?)\s+(.+)$/i);
     if (beforeStreet) return { street: beforeStreet[2].trim(), number: beforeStreet[1] };
-    const atEnd = address.match(/^(.+?)\s+(\d+[a-z]?)$/i);
+    const atEnd = address.match(/^(.+?)\s+(\d+[a-z]?)(?=\s*(?:[,;]|[-–]|$))/i);
     return atEnd ? { street: atEnd[1].trim(), number: atEnd[2] } : { street: address, number: '' };
 }
 
@@ -114,6 +114,8 @@ function inspectCandidate(feature, destination, parsed) {
 
 async function searchGeocoder(url, key, fetcher) {
     const response = await fetcher(url, { headers: { Authorization: key, Accept: 'application/json' }, redirect: 'error', signal: AbortSignal.timeout(8000) });
+    if (response.status === 401 || response.status === 403) throw new FreightError('A chave do serviço de mapas não foi aceita.', 503);
+    if (response.status === 429) throw new FreightError('Limite temporário do serviço de mapas. Tente novamente mais tarde.', 503);
     if (!response.ok) throw new FreightError('Serviço de mapas indisponível.', 503);
     const data = await response.json();
     return Array.isArray(data?.features) ? data.features.slice(0, 10) : [];
@@ -121,6 +123,8 @@ async function searchGeocoder(url, key, fetcher) {
 
 async function geocode(destination, key, fetcher, postalReference) {
     const parsed = splitAddress(destination.endereco);
+    if (!parsed.number) throw new FreightError('Informe rua e número do destino para calcular a entrega.');
+    const postalPoint = validPoint(postalReference?.coordinates) ? postalReference.coordinates : null;
     const structured = new URL('https://api.openrouteservice.org/geocode/search/structured');
     structured.searchParams.set('address', parsed.number ? `${parsed.street}, ${parsed.number}` : parsed.street);
     structured.searchParams.set('locality', destination.cidade);
@@ -129,10 +133,19 @@ async function geocode(destination, key, fetcher, postalReference) {
     structured.searchParams.set('country', 'BR');
     structured.searchParams.set('boundary.country', 'BR');
     structured.searchParams.set('size', '10');
+    if (postalPoint) {
+        structured.searchParams.set('focus.point.lon', String(postalPoint[0]));
+        structured.searchParams.set('focus.point.lat', String(postalPoint[1]));
+    }
     const text = new URL('https://api.openrouteservice.org/geocode/search');
     text.searchParams.set('text', [parsed.street, parsed.number, destination.cidade, destination.estado, destination.cep, 'Brasil'].filter(Boolean).join(', '));
     text.searchParams.set('boundary.country', 'BR');
     text.searchParams.set('size', '10');
+    text.searchParams.set('layers', 'address');
+    if (postalPoint) {
+        text.searchParams.set('focus.point.lon', String(postalPoint[0]));
+        text.searchParams.set('focus.point.lat', String(postalPoint[1]));
+    }
 
     let best = null;
     let ambiguous = false;
@@ -140,7 +153,10 @@ async function geocode(destination, key, fetcher, postalReference) {
     for (const url of [structured, text]) {
         let features;
         try { features = await searchGeocoder(url, key, fetcher); }
-        catch { continue; } // A busca estruturada é beta; a textual continua disponível como alternativa.
+        catch (error) {
+            if (error instanceof FreightError && /chave|Limite temporário/.test(error.message)) throw error;
+            continue;
+        }
         successfulQueries++;
         const candidates = features.map((feature) => inspectCandidate(feature, destination, parsed)).filter(Boolean).sort((a, b) => b.score - a.score);
         if (!candidates.length) continue;
@@ -159,7 +175,7 @@ async function geocode(destination, key, fetcher, postalReference) {
         && validPoint(postalReference?.coordinates)) {
         return { coordinates: postalReference.coordinates, label: `${postalReference.street}, CEP ${destination.cep} (ponto aproximado)`, precision: 'approximate', provider: 'BrasilAPI CEP v2' };
     }
-    if (best) return { coordinates: best.coordinates, label: best.label, precision: 'approximate' };
+    if (best && (!postalPoint || kilometersBetween(best.coordinates, postalPoint) <= 10)) return { coordinates: best.coordinates, label: best.label, precision: 'approximate' };
     throw new FreightError(successfulQueries ? 'Endereço não localizado com segurança. Confira rua, número, cidade e CEP.' : 'Serviço de mapas indisponível.', successfulQueries ? 422 : 503);
 }
 
@@ -174,7 +190,7 @@ export async function getRoadDistance(destination, { key = readRouteKey(), fetch
         const end = await geocode(destination, key, fetcher, postalReference);
         const response = await fetcher('https://api.openrouteservice.org/v2/directions/driving-hgv/json', {
             method: 'POST', headers: { Authorization: key, Accept: 'application/json', 'Content-Type': 'application/json' },
-            body: JSON.stringify({ coordinates: [origin.coordinates, end.coordinates], options: { vehicle_type: 'delivery' }, instructions: false }),
+            body: JSON.stringify({ coordinates: [origin.coordinates, end.coordinates], radiuses: [250, 250], options: { vehicle_type: 'delivery' }, instructions: false }),
             redirect: 'error', signal: AbortSignal.timeout(10000),
         });
         if (!response.ok) throw new FreightError('Não foi possível calcular a rota do caminhão. Confira a distância manualmente.', 503);

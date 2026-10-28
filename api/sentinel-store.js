@@ -1,6 +1,7 @@
 import crypto from 'node:crypto';
 import fs from 'node:fs';
 import path from 'node:path';
+import { quoteEmailSignature } from './orders.js';
 import { sentinelRoot } from './sentinel-config.js';
 
 export const sentinelStateFile = path.join(sentinelRoot, 'sentinel-state.json');
@@ -58,6 +59,28 @@ export function sentinelSummary(orders, file = sentinelStateFile) {
     const state = readSentinelState(file);
     const jobs = Object.values(state.jobs);
     const avg = state.counters.analysisCount ? Math.round(state.counters.analysisDurationMs / state.counters.analysisCount) : 0;
+    const recentCutoff = Date.now() - 30 * 86400000;
+    const productVolume = new Map();
+    let unitsRequested = 0;
+    let acceptedProposalCents = 0;
+    let acceptedProposals = 0;
+    let received30Days = 0;
+    for (const order of orders) {
+        if (Number.isFinite(Date.parse(order.createdAt)) && Date.parse(order.createdAt) >= recentCutoff) received30Days++;
+        for (const item of order.items || []) {
+            if (!Number.isSafeInteger(item.quantity) || item.quantity < 0) continue;
+            unitsRequested += item.quantity;
+            const current = productVolume.get(item.id) || { id: item.id, name: item.name || item.id, units: 0, orders: 0 };
+            current.units += item.quantity;
+            current.orders++;
+            productVolume.set(item.id, current);
+        }
+        if (order.quoteEmailSentAt && order.quoteEmailSignature === quoteEmailSignature(order)
+            && Number.isSafeInteger(order.quote?.totalCents) && order.quote.totalCents >= 0) {
+            acceptedProposals++;
+            acceptedProposalCents += order.quote.totalCents;
+        }
+    }
     return {
         metrics: {
             received: orders.length, processed: state.counters.processed,
@@ -69,6 +92,11 @@ export function sentinelSummary(orders, file = sentinelStateFile) {
             tokens: state.counters.tokens,
             averageAnalysisMs: avg,
             successRate: state.counters.processed ? Math.round(jobs.filter((job) => job.status === 'sent').length / state.counters.processed * 100) : 0,
+        },
+        commercial: {
+            received30Days, unitsRequested, acceptedProposals, acceptedProposalCents,
+            averageAcceptedProposalCents: acceptedProposals ? Math.round(acceptedProposalCents / acceptedProposals) : 0,
+            topProducts: [...productVolume.values()].sort((a, b) => b.units - a.units || a.name.localeCompare(b.name, 'pt-BR')).slice(0, 3),
         },
         jobs: state.jobs, events: state.events.slice(-100).reverse(), notifications: state.notifications.slice(-100).reverse(),
     };

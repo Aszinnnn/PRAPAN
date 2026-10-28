@@ -1,3 +1,102 @@
+import { catalogProducts } from './catalog-data.js';
+
+function addCatalogProducts() {
+    const carousel = document.querySelector('#product-carousel');
+    const orderItems = document.querySelector('#order-items');
+    if (!carousel || !orderItems) return;
+    for (const [index, product] of catalogProducts.entries()) {
+        if (index < 4) continue;
+        const number = String(index + 1).padStart(2, '0');
+        const article = document.createElement('article');
+        article.className = 'product-card product-card--mockup';
+        article.dataset.productId = product.id;
+        const visual = document.createElement('div');
+        visual.className = 'product-card__visual';
+        const zoom = document.createElement('button');
+        zoom.className = 'product-card__zoom';
+        zoom.type = 'button';
+        zoom.dataset.zoomImage = product.image;
+        zoom.dataset.zoomTitle = product.name;
+        zoom.setAttribute('aria-label', `Ampliar imagem de ${product.name}`);
+        const image = document.createElement('img');
+        image.src = product.image;
+        image.alt = `Conceito visual de embalagem de ${product.name}`;
+        image.width = 1536;
+        image.height = 1024;
+        image.loading = 'lazy';
+        const hint = document.createElement('span');
+        hint.className = 'product-card__zoom-hint';
+        hint.setAttribute('aria-hidden', 'true');
+        hint.textContent = 'Ampliar imagem ＋';
+        zoom.append(image, hint);
+        const badge = document.createElement('span');
+        badge.className = 'product-card__number';
+        badge.setAttribute('aria-hidden', 'true');
+        badge.textContent = number;
+        visual.append(zoom, badge);
+        const body = document.createElement('div');
+        body.className = 'product-card__body';
+        const eyebrow = document.createElement('p');
+        eyebrow.className = 'product-card__eyebrow';
+        eyebrow.textContent = 'Imagem ilustrativa';
+        const title = document.createElement('h3');
+        title.textContent = product.name;
+        const price = document.createElement('p');
+        price.className = 'product-card__price';
+        price.dataset.priceFor = product.id;
+        price.textContent = 'Preço sob consulta';
+        const description = document.createElement('p');
+        description.textContent = 'Selecione este item e informe a quantidade desejada.';
+        body.append(eyebrow, title, price, description);
+        const select = document.createElement('a');
+        select.href = `#produto-${number}`;
+        select.append('Selecionar produto ');
+        const arrow = document.createElement('span');
+        arrow.setAttribute('aria-hidden', 'true');
+        arrow.textContent = '↗';
+        select.append(arrow);
+        article.append(visual, body, select);
+        carousel.append(article);
+
+        const item = document.createElement('div');
+        item.className = 'order-item';
+        item.id = `produto-${number}`;
+        const choiceLabel = document.createElement('label');
+        choiceLabel.className = 'order-item__choice';
+        choiceLabel.htmlFor = `selecionar-${number}`;
+        const checkbox = document.createElement('input');
+        checkbox.id = `selecionar-${number}`;
+        checkbox.name = 'produtos';
+        checkbox.type = 'checkbox';
+        checkbox.value = product.id;
+        checkbox.dataset.product = '';
+        checkbox.disabled = true;
+        const choiceName = document.createElement('span');
+        choiceName.textContent = product.name;
+        choiceLabel.append(checkbox, choiceName);
+        const quantity = document.createElement('div');
+        quantity.className = 'order-item__quantity';
+        const quantityLabel = document.createElement('label');
+        quantityLabel.htmlFor = `quantidade-${number}`;
+        quantityLabel.textContent = 'Unidades';
+        const quantityInput = document.createElement('input');
+        quantityInput.id = `quantidade-${number}`;
+        quantityInput.name = `quantidade-${number}`;
+        quantityInput.type = 'number';
+        quantityInput.min = '100';
+        quantityInput.max = '1000000';
+        quantityInput.step = '1';
+        quantityInput.inputMode = 'numeric';
+        quantityInput.placeholder = 'Mín. 100';
+        quantityInput.disabled = true;
+        quantity.append(quantityLabel, quantityInput);
+        item.append(choiceLabel, quantity);
+        orderItems.append(item);
+    }
+}
+
+addCatalogProducts();
+
 const quoteForm = document.querySelector('#quote-form');
 const productChoices = [...document.querySelectorAll('[data-product]')];
 const formStatus = document.querySelector('#form-status');
@@ -8,7 +107,101 @@ const previewDialog = document.querySelector('#preview-dialog');
 const orderPreview = document.querySelector('#order-preview');
 const copyButton = document.querySelector('#copy-order');
 const copyStatus = document.querySelector('#copy-status');
+const productCarousel = document.querySelector('#product-carousel');
+const carouselPrevious = document.querySelector('[data-carousel-prev]');
+const carouselNext = document.querySelector('[data-carousel-next]');
+const carouselCount = document.querySelector('#catalog-carousel-count');
+const productSearch = document.querySelector('#buscar-produto');
+const selectedProductCount = document.querySelector('#order-items-count');
+const catalogStatus = document.querySelector('#catalog-status');
+const submitButton = quoteForm?.querySelector('button[type="submit"]');
 let hasUnsavedChanges = false;
+
+for (const choice of productChoices) choice.disabled = true;
+
+function setProductAvailability(choice, unitPriceCents) {
+    const available = Number.isSafeInteger(unitPriceCents) && unitPriceCents > 0;
+    const item = choice.closest('.order-item');
+    const card = [...document.querySelectorAll('.product-card')].find((entry) => entry.dataset.productId === choice.value);
+    const price = card?.querySelector('.product-card__price');
+    const description = card?.querySelector('.product-card__body > p:last-child');
+    const link = card?.querySelector(':scope > a');
+    const name = choice.closest('label')?.querySelector('span');
+    choice.disabled = !available;
+    if (!available) choice.checked = false;
+    syncProductChoice(choice);
+    item?.classList.toggle('is-unavailable', !available);
+    card?.classList.toggle('is-unavailable', !available);
+    if (price) price.textContent = available ? `${new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(unitPriceCents / 100)} por unidade` : 'Preço a definir';
+    if (description) description.textContent = available ? 'Selecione este item e informe a quantidade desejada.' : 'Disponível para consulta. Orçamento após a definição do preço.';
+    if (link) {
+        link.setAttribute('aria-disabled', String(!available));
+        link.tabIndex = available ? 0 : -1;
+        link.firstChild.textContent = available ? 'Selecionar produto ' : 'Aguardando preço ';
+    }
+    if (name) {
+        name.querySelector('.order-item__availability')?.remove();
+        if (!available) {
+            const note = document.createElement('small');
+            note.className = 'order-item__availability';
+            note.textContent = 'Aguardando preço';
+            name.append(note);
+        }
+    }
+    return available;
+}
+
+async function loadCatalog() {
+    try {
+        const response = await fetch('/api/catalog', { credentials: 'same-origin', cache: 'no-store' });
+        if (!response.ok) throw new Error('Catálogo indisponível.');
+        const catalog = await response.json();
+        if (!Array.isArray(catalog.products)) throw new Error('Catálogo inválido.');
+        const prices = new Map(catalog.products.map((product) => [product.id, product.unitPriceCents]));
+        const availableCount = productChoices.filter((choice) => setProductAvailability(choice, prices.get(choice.value))).length;
+        if (catalogStatus) catalogStatus.textContent = availableCount ? `${availableCount} produtos disponíveis para orçamento. Itens sem preço não podem ser selecionados.` : 'Nenhum produto está disponível para orçamento até a definição dos preços.';
+    } catch {
+        productChoices.forEach((choice) => setProductAvailability(choice, null));
+        if (catalogStatus) catalogStatus.textContent = 'Não foi possível consultar os preços. Atualize a página para tentar novamente.';
+    }
+}
+
+void loadCatalog();
+
+if (productCarousel && carouselPrevious && carouselNext && carouselCount) {
+    const cards = [...productCarousel.querySelectorAll('.product-card')];
+    const visibleCards = () => window.matchMedia('(max-width: 560px)').matches ? 1 : 2;
+    const maxStart = () => Math.max(0, cards.length - visibleCards());
+    const cardPosition = (card) => card.offsetLeft - cards[0].offsetLeft;
+    const currentStart = () => {
+        const nearest = cards.reduce((best, card, index) =>
+            Math.abs(cardPosition(card) - productCarousel.scrollLeft) <
+            Math.abs(cardPosition(cards[best]) - productCarousel.scrollLeft) ? index : best, 0);
+        return Math.min(nearest, maxStart());
+    };
+    const updateCarousel = () => {
+        if (!cards.length) return;
+        const start = currentStart();
+        carouselPrevious.disabled = start === 0;
+        carouselNext.disabled = start >= maxStart();
+        carouselCount.textContent = `${start + 1} a ${Math.min(cards.length, start + visibleCards())} de ${cards.length} produtos`;
+    };
+    const goTo = (index) => {
+        const target = cards[Math.max(0, Math.min(index, maxStart()))];
+        if (!target) return;
+        productCarousel.scrollTo({ left: cardPosition(target), behavior: window.matchMedia('(prefers-reduced-motion: reduce)').matches ? 'instant' : 'smooth' });
+    };
+    carouselPrevious.addEventListener('click', () => goTo(currentStart() - 1));
+    carouselNext.addEventListener('click', () => goTo(currentStart() + 1));
+    productCarousel.addEventListener('keydown', (event) => {
+        if (event.target !== productCarousel || !['ArrowLeft', 'ArrowRight'].includes(event.key)) return;
+        event.preventDefault();
+        goTo(currentStart() + (event.key === 'ArrowRight' ? 1 : -1));
+    });
+    productCarousel.addEventListener('scroll', updateCarousel, { passive: true });
+    window.addEventListener('resize', updateCarousel);
+    updateCarousel();
+}
 
 function getQuantityInput(choice) {
     return choice.closest('.order-item')?.querySelector('input[type="number"]');
@@ -31,7 +224,20 @@ function syncProductChoice(choice) {
     if (productChoices.some((product) => product.checked)) {
         document.querySelector('#produtos-error').textContent = '';
     }
+    const count = productChoices.filter((product) => product.checked).length;
+    if (selectedProductCount) selectedProductCount.textContent = count ? `${count} ${count === 1 ? 'produto selecionado' : 'produtos selecionados'}` : 'Nenhum produto selecionado';
 }
+
+function filterProductChoices() {
+    const term = (productSearch?.value || '').normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase().trim();
+    for (const choice of productChoices) {
+        const item = choice.closest('.order-item');
+        const name = choice.closest('label')?.textContent.normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase() || '';
+        if (item) item.hidden = Boolean(term) && !name.includes(term) && !choice.checked;
+    }
+}
+
+productSearch?.addEventListener('input', filterProductChoices);
 
 function setFieldError(field, message) {
     const error = document.querySelector(`#${field.id}-error`);
@@ -68,8 +274,12 @@ function validateProducts() {
     const error = document.querySelector('#produtos-error');
     let firstInvalid = null;
 
-    error.textContent = selected.length ? '' : 'Selecione pelo menos 1 produto.';
-    if (!selected.length) firstInvalid = productChoices[0];
+    error.textContent = selected.length ? '' : productChoices.some((choice) => !choice.disabled) ? 'Selecione pelo menos 1 produto.' : 'Nenhum produto com preço disponível para orçamento.';
+    if (!selected.length) {
+        if (productSearch) productSearch.value = '';
+        filterProductChoices();
+        firstInvalid = productChoices.find((choice) => !choice.disabled) || productSearch || null;
+    }
 
     for (const choice of selected) {
         const quantity = getQuantityInput(choice);
@@ -115,15 +325,20 @@ function buildOrderText(order) {
 }
 
 productChoices.forEach((choice) => {
-    choice.addEventListener('change', () => syncProductChoice(choice));
+    choice.addEventListener('change', () => {
+        syncProductChoice(choice);
+        filterProductChoices();
+    });
     syncProductChoice(choice);
 });
 
 document.querySelectorAll('.product-card > a').forEach((link) => {
-    link.addEventListener('click', () => {
+    link.addEventListener('click', (event) => {
         const target = document.querySelector(link.getAttribute('href'));
         const choice = target?.querySelector('[data-product]');
-        if (!choice) return;
+        if (!choice || choice.disabled) { event.preventDefault(); return; }
+        if (productSearch) productSearch.value = '';
+        filterProductChoices();
         choice.checked = true;
         syncProductChoice(choice);
         hasUnsavedChanges = true;
@@ -215,6 +430,7 @@ quoteForm?.addEventListener('submit', async (event) => {
         }
         quoteForm.reset();
         productChoices.forEach(syncProductChoice);
+        filterProductChoices();
         hasUnsavedChanges = false;
         if (formStatus) formStatus.textContent = `Solicitação ${result.order.id.slice(0, 8)} registrada. Ela já aparece no dashboard.`;
     } catch (error) {
