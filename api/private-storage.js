@@ -11,7 +11,7 @@ const resolved = path.resolve(configured || path.join(os.homedir(), '.local', 's
 let existing = resolved;
 while (!fs.existsSync(existing) && path.dirname(existing) !== existing) existing = path.dirname(existing);
 const real = path.resolve(fs.realpathSync(existing), path.relative(existing, resolved));
-if (real === projectRoot || real.startsWith(`${projectRoot}${path.sep}`)) {
+if (configured && (real === projectRoot || real.startsWith(`${projectRoot}${path.sep}`))) {
     throw new Error('PRAPAN_DATA_DIR não pode ficar dentro do projeto ou de pastas públicas.');
 }
 
